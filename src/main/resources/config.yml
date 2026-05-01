@@ -1,0 +1,15 @@
+# Configurazione Database (condivisa tra tutti i moduli)
+database:
+  # Tipo di database: sqlite o mysql
+  type: sqlite
+
+  # Nome file SQLite (usato solo se type: sqlite)
+  sqlite-file:
+
+  # Impostazioni MySQL (usate solo se type: mysql)
+  mysql:
+    host:
+    port:
+    database:
+    username:
+    password:

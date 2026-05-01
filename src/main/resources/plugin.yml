@@ -1,0 +1,6 @@
+name: BackPack
+version: '${version}'
+
+main: io.github.Novma.backPack.BackPackPlugin
+api-version: '1.21.4'
+load: POSTWORLD
