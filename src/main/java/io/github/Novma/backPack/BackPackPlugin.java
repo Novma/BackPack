@@ -1,27 +1,40 @@
 package io.github.Novma.backPack;
 
 import io.github.Novma.backPack.backpack.BackPackConfig;
+import io.github.Novma.backPack.backpack.BackPackManager;
+import io.github.Novma.backPack.command.BackPackCommand;
+import io.github.Novma.backPack.listener.CropsListener;
+import io.github.Novma.backPack.listener.GUIListener;
+import io.github.Novma.backPack.listener.PlayerListener;
+import io.github.Novma.backPack.util.YamlManager;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class BackPackPlugin extends JavaPlugin {
 
-//    private final Database database;
     private static Plugin instance;
     private static BackPackConfig backPackConfig;
+    private static BackPackManager backPackManager;
+    private static boolean debug;
 
     @Override
     public void onEnable() {
         instance = this;
+        YamlManager.setup(this);
+        backPackConfig = new BackPackConfig();
+        backPackManager = new BackPackManager();
+        debug = getConfig().getBoolean("debug");
+        if (debug) {getLogger().info("[DEBUG] Debug mode enabled");}
 
         saveFiles();
         setupBackPackConfig();
-//      setupDatabase();
+        setupCommands();
+        setupListeners();
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        backPackManager.removeAll();
     }
 
     private void saveFiles() {
@@ -29,27 +42,23 @@ public final class BackPackPlugin extends JavaPlugin {
         saveResource("backpack.yml", false);
     }
 
+    private void setupCommands() {
+        getCommand("backpack").setExecutor(new BackPackCommand(backPackManager));
+    }
+
+    private void setupListeners() {
+        getServer().getPluginManager().registerEvents(new GUIListener(backPackManager), this);
+        getServer().getPluginManager().registerEvents(new PlayerListener(backPackManager), this);
+        getServer().getPluginManager().registerEvents(new CropsListener(backPackManager), this);
+    }
+
     private void setupBackPackConfig() {
         backPackConfig = new BackPackConfig();
     }
 
-//    private void setupDatabase() {
-//        String dbType = this.globalConfig.getString("database.type").toLowerCase();
-//        if ("mysql".equals(dbType)) {
-//            String host = this.globalConfig.getString("database.mysql.host");
-//            int port = this.globalConfig.getInt("database.mysql.port");
-//            String dbName = this.globalConfig.getString("database.mysql.database");
-//            String username = this.globalConfig.getString("database.mysql.username");
-//            String password = this.globalConfig.getString("database.mysql.password");
-//            this.database = (Database)new MySQLDatabase(this, host, port, dbName, username, password);
-//        } else {
-//            String sqliteFile = this.globalConfig.getString("database.sqlite-file");
-//            if (sqliteFile == null || sqliteFile.isEmpty())
-//                sqliteFile = "monkeycore.db";
-//            this.database = (Database)new SQLiteDatabase(this, sqliteFile);
-//        }
-//        this.database.connect();
-//    }
-
     public static Plugin getInstance() {return instance;}
+
+    public static boolean getDebug() {return debug;}
+
+    public static BackPackConfig getBackPackConfig() {return backPackConfig;}
 }

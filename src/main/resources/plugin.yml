@@ -1,6 +1,27 @@
 name: BackPack
-version: '${version}'
+version: '1.0'
 
 main: io.github.Novma.backPack.BackPackPlugin
 api-version: '1.21.4'
 load: POSTWORLD
+
+commands:
+  backpack:
+    description: Apre il backpack per le crop
+    aliases: [bp]
+    usage: /<command>
+    permission: backpack.use
+    permission-message: Non puoi usare questo comando
+
+permissions:
+  backpack.use:
+    description: Permette di usare il comando backpack
+    default: op
+  backpack.others:
+    description: Permette di vedere il backpack di altri player
+    default: op
+  backpack.modify:
+    description: Permette di modificare il backpack di altri player
+  backpack.reload:
+    description: Permette di usare il comando reload
+    default: op

@@ -9,12 +9,15 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BackPackConfig {
     private final File configFile;
     private YamlConfiguration config;
-    private final ItemStack[] utils = new  ItemStack[3];
-    private int lines, pages;
+    private final ItemStack[] utils = new  ItemStack[9];
+    private int posPre, posNext;
+    private final List<Material> crops = new ArrayList<>();
 
     public BackPackConfig() {
         this.configFile = new File(BackPackPlugin.getInstance().getDataFolder(), "backpack.yml");
@@ -23,19 +26,23 @@ public class BackPackConfig {
 
     public void load() {
         this.config = YamlConfiguration.loadConfiguration(configFile);
-        setupSize();
         setupUtils();
-    }
-
-    private void setupSize() {
-        this.lines = this.config.getInt("size.lines");
-        this.pages = this.config.getInt("size.pages");
+        setupCrops();
     }
 
     private void setupUtils() {
-        utils[0] = createUtil("filler");
-        utils[1] = createUtil("previous");
-        utils[2] = createUtil("next");
+        posPre = config.getInt("gui.previous");
+        posNext = config.getInt("gui.next");
+        if (posPre < 0 || posNext < 0 || posPre > 8 || posNext > 8) {
+            BackPackPlugin.getInstance().getLogger().warning("Posizioni dei tasti previous e next non accettate");
+            posPre = 1;
+            posNext = 7;
+        }
+        for (int i = 0; i < 9; i++) {
+            if (i == posPre) utils[i] = createUtil("previous");
+            else if (i == posNext) utils[i] = createUtil("next");
+            else utils[i] = createUtil("filler");
+        }
     }
 
     private ItemStack createUtil(String name) {
@@ -51,7 +58,7 @@ public class BackPackConfig {
         } else {
             item = new ItemStack(material);
             ItemMeta meta = item.getItemMeta();
-            meta.displayName(Component.text(config.getString("utils." + name + ".displayName", "")));
+            meta.displayName(Component.text(config.getString("utils." + name + ".name", "")));
             meta.lore(config.getStringList("utils." + name + ".lore").stream()
                     .map(line -> LegacyComponentSerializer.legacyAmpersand().deserialize(line))
                     .toList());
@@ -61,19 +68,23 @@ public class BackPackConfig {
         return item;
     }
 
+    private void setupCrops() {
+        List<String> list = config.getStringList("crops");
+        for (String s : list) {
+            crops.add(Material.matchMaterial(s));
+        }
+    }
+
     public int getLines() {
-        return this.lines;
+        return this.config.getInt("size.lines");
     }
     public int getPages() {
-        return this.pages;
+        return this.config.getInt("size.pages");
     }
-    public ItemStack getFiller() {
-        return this.utils[0];
-    }
-    public ItemStack getPrevious() {
-        return this.utils[1];
-    }
-    public ItemStack getNext() {
-        return this.utils[2];
-    }
+    public ItemStack[] getUtils() {return this.utils;}
+    public String getTitle() {return config.getString("gui.title");}
+    public int  getPosPre() {return posPre;}
+    public int getPosNext() {return posNext;}
+    public String getFullInventory() {return config.getString("messages.full-inventory");}
+    public List<Material> getCrops() {return crops;}
 }

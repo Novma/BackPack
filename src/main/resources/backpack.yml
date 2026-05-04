@@ -1,23 +1,48 @@
 # Configurazione backpack
 size:
   # Dimensioni
+  # Numero di righe contenenti item
   lines: 4
+  # Numero massimo di pagine, -1 non ha limite
   pages: 3
 
 utils:
   # Blocchi util
   filler:
     material: "BLACK_STAINED_GLASS_PANE"
-    display-name: ""
+    name: ""
     lore: ""
     glint: "false"
   previous:
     material: "FIREWORK_ROCKET"
-    display-name: "Precedente"
+    name: "Precedente"
     lore: ""
     glint: "true"
   next:
     material: "FIREWORK_ROCKET"
-    display-name: "Successivo"
+    name: "Successivo"
     lore: ""
     glint: "true"
+
+# GUI inventario
+gui:
+  # Titolo della GUI
+  # %act% numero pagina attuale
+  # %max% numero pagine totali
+  title: "BackPack [%act% - %max%]"
+  # Posizione del tasto previous [0-8]
+  previous: 1
+  # Posizione del tasto next [0-8]
+  next: 7
+
+# Messaggi della GUI
+messages:
+  # Inventario pieno
+  full-inventory: "Hai l'inventario pieno!"
+
+# Crop
+# Lista delle crop da inserire nel backpack
+crop:
+  - "WHEAT"
+  - "CARROT"
+  - "POTATO"
